@@ -4,12 +4,22 @@ defineProps({
     title: String,
     completed: Boolean
 })
+const emit = defineEmits(['todoItemDeleted', 'todoItemCompleted']);
+
+function handleClick(event) {
+    emit('todoItemDeleted');
+}
+function handleChange(event) {
+    emit('todoItemCompleted', event.target.checked);
+}
 </script>
 
 <template>
-    <input type="checkbox" :checked="completed" />
+    <input type="checkbox" :checked="completed" @change="handleChange" />
     <p>{{ title }}</p>
-    <button>Delete</button>
+    <button @click="$emit('todoItemDeleted')">Delete</button>
+    <!-- v-on: sau @ -->
+    <!-- se mai poate pentru emitere $emit('todoItemDeleted') in partea html -->
 </template>
 <style scoped>
 p,
