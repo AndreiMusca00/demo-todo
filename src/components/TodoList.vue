@@ -1,7 +1,8 @@
 <script setup>
+//cream un formular pentru a putea face un insert in todos 
 import TodoListItem from './TodoListItem.vue';
-import { ref, reactive } from 'vue';
-const response = await fetch('https://jsonplaceholder.typicode.com/todos');
+import { ref, reactive, watch } from 'vue';
+let response = await fetch('https://jsonplaceholder.typicode.com/todos');
 
 
 let todos = await response.json();
@@ -16,7 +17,7 @@ const counter = reactive({
     deleted: 0,
     updated: 0
 });
-
+//const counter = ref(0)
 
 function handleTodoItemDeleted(todoItemId) {
     console.log("Delete" + todoItemId);
@@ -29,11 +30,55 @@ function handleTodoItemCompleted(todoItemId, completed) {
     console.log("Completer" + todoItemId + completed);
     counter.updated++;
 }
+const text = ref("")
+let isDisabled = ref(true)
+watch(text, newValue => {
+    if (newValue != "") {
+        isDisabled.value = false
+    } else {
+        isDisabled.value = true
+    }
+})
+
+
+
+function AddTodo() {
+    console.log(text.value);
+    console.log(todos.length);
+    let idNew = reactiveTodos.length
+    let newTodo = {
+        userId: 1,
+        id: idNew,
+        title: text.value,
+        completed: false,
+    }
+    reactiveTodos.value.push(newTodo)
+    console.log(reactiveTodos);
+
+    fetch('https://jsonplaceholder.typicode.com/todos', {
+        method: 'POST',
+        body: JSON.stringify({
+            id: idNew,
+            title: text.value,
+            userId: 1,
+            completed: true
+        }),
+        headers: {
+            'Content-type': 'application/json; charset=UTF-8',
+        },
+    }).then((response) => response.json()).then((json) => console.log(json));
+}
+
+
 </script>
 
 <template>
-    <p>Changes deleted: {{ counter.deleted }}</p>
+    <span>Two-way data binding</span>
+    <input type="text" v-model="text" />
+    <button @click="AddTodo" :disabled="isDisabled">Add </button>
     <p>Changes updated: {{ counter.updated }}</p>
+
+    <p>Changes deleted: {{ counter.deleted }}</p>
 
     <div class="grid-container">
         <TodoListItem v-for="todo of reactiveTodos" :key="todo.id" :id="todo.id" :title="todo.title"
